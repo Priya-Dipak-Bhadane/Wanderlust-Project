@@ -104,6 +104,8 @@ body {
 .edit-btn {
     background-color: #fe424d !important;
     border: none !important;
+    height: 40px !important;
+    width: 60px !important;
 }
 
 /* Show Image */
