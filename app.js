@@ -2,6 +2,9 @@ if(process.env.NODE_ENV !="production") {
     require("dotenv").config();
 }
 
+const dns = require("dns");
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -14,7 +17,7 @@ const MongoStore = require('connect-mongo');
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
-const User = require("./models/user.js");
+const User = require("./init/models/user.js");
 
 
 const listingRouter = require("./routes/listing.js");
@@ -67,9 +70,9 @@ const sessionOptions = {
     },
 };
 
-// app.get("/", (req, res) => {
-//     res.send("Hi, I am root");
-// });
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
 
 
 app.use(session(sessionOptions));
@@ -104,16 +107,17 @@ app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
 
-app.all("/", (req, res, next) => {
+app.use((req, res, next) => {
     next(new ExpressError(404, "Page Not Found!"));
 });
 
 app.use((err, req, res, next) => {
     let {statusCode = 500, message = "Something Went Wrong!"} = err;
     res.status(statusCode).render("error.ejs", { message });
-    // res.status(statusCode).send(message);
 });
 
-app.listen(8080, () => {
-    console.log("server is listening to port 8080");
+const port = process.env.PORT || 8080;
+
+app.listen(port, () => {
+    console.log(`server is listening to port ${port}`);
 });
